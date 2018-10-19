@@ -1,16 +1,19 @@
 package com.sarrawi.mymessages;
 
+import android.app.SearchManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.sarrawi.mymessages.adapter.MsgAdapter;
@@ -28,7 +31,7 @@ public class FavActivity extends AppCompatActivity {
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
     DrawerLayout drawer;
-    private MsgAdapter msgFavAdapter;
+    private MsgFavAdapter msgFavAdapter;
     private List<Msg> msg_list;
     private DatabaseHelper mDBHelper;
     @Override
@@ -41,9 +44,9 @@ public class FavActivity extends AppCompatActivity {
         RVMsgFav=(RecyclerView)findViewById(R.id.Msg_Types);
         mDBHelper = new DatabaseHelper(this);
 
-        msg_list = mDBHelper.DataFaVourit();
+        msg_list = mDBHelper.getFavMessages();
         //Init adapter
-        msgFavAdapter= new MsgAdapter(msg_list, FavActivity.this);
+        msgFavAdapter= new MsgFavAdapter(msg_list, FavActivity.this);
         RVMsgFav.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         RVMsgFav.setLayoutManager(mLayoutManager);
@@ -59,4 +62,6 @@ public class FavActivity extends AppCompatActivity {
         super.onResume();
         msgFavAdapter.notifyDataSetChanged();
     }
+
+
 }

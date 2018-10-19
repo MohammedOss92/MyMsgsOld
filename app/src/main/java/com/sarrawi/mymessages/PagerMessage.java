@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sarrawi.mymessages.database.DatabaseHelper;
 import com.sarrawi.mymessages.model.Msg;
@@ -45,6 +46,7 @@ public class PagerMessage extends AppCompatActivity {
     int titleID;
     boolean sourceISFav;
     int msgId=0;
+    String filter="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,7 @@ public class PagerMessage extends AppCompatActivity {
         titleID=i.getExtras().getInt("titleID");
         int pos=i.getExtras().getInt("pos");
         msgId=i.getExtras().getInt("msgID");
+        filter=i.getExtras().getString("filter");
         // in case of fav the origPos sent from FavMessages as favOrder
         // but in case of normal message it sent as origpos
         sourceISFav=i.getExtras().getBoolean("sourceIsFav");
@@ -65,15 +68,15 @@ public class PagerMessage extends AppCompatActivity {
 
 
         DatabaseHelper ss=new DatabaseHelper(getApplicationContext());
-//        if(sourceISFav)
-//        {
-//            //we have to keep it ASC in Fav because of pager position
-//            //because we use its order while in normal messages it is not favorder but it is origposition
-//            msg_list = ss.getFavMessagesOrderedASC() ;
-//        }
-//        else {
+        if(sourceISFav)
+        {
+            //we have to keep it ASC in Fav because of pager position
+            //because we use its order while in normal messages it is not favorder but it is origposition
+            msg_list = ss.getFavMessages() ;
+        }
+        else {
             msg_list = ss.getMessagesNotOrdered(titleID);
-//        }
+        }
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
@@ -152,12 +155,32 @@ public class PagerMessage extends AppCompatActivity {
             tvTitle.setText(titleDesc);
             tvMsg.setText(msg);
 
+            if(s.getIFMsgIsFav(m)==1)
+            {
+                fav.setImageResource(R.mipmap.f);
+            }
+            else
+            {
+                fav.setImageResource(R.mipmap.nf);
+            }
+
             fav.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    if(data.fav())
+                    if(s.getIFMsgIsFav(m)==0) {
+                        fav.setImageResource(R.mipmap.f);
+                        s.changeFav( m,1);
+                        Toast.makeText(getActivity(), "تم الإضافة للمفضله", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {  fav.setImageResource(R.mipmap.nf);
+                        s.changeFav(m, 0);
+                        Toast.makeText(getActivity(), "تم الإزالة من المفضله", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
+
+
 
             return rootView;
         }

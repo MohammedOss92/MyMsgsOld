@@ -1,20 +1,27 @@
 package com.sarrawi.mymessages;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.sarrawi.mymessages.adapter.MsgAdapter;
@@ -104,5 +111,98 @@ public class MessageActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         msgAdapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_msg, menu);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchManager searchManager = (SearchManager) MessageActivity.this.getSystemService(Context.SEARCH_SERVICE);
+
+
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+
+            final EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+            searchEditText.setTextColor(getResources().getColor(R.color.colorBlack));
+            searchEditText.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+
+            int searchImgId = android.support.v7.appcompat.R.id.search_button;
+            ImageView v = (ImageView) searchView.findViewById(searchImgId);
+            v.setImageResource(R.mipmap.search);
+
+            int closeImgId = android.support.v7.appcompat.R.id.search_close_btn;
+            ImageView close_button = (ImageView) searchView.findViewById(closeImgId);
+            close_button.setColorFilter(Color.WHITE);
+
+            close_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchView.onActionViewCollapsed();
+                    //Collapse the search widget
+                    searchItem.collapseActionView();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+
+
+                    msg_list.clear();
+                    msg_list.addAll(DatabaseHelper.getInstance(MessageActivity.this).getAllMsgnotID());
+                    msgAdapter.notifyDataSetChanged();
+
+
+                }
+            });
+
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(MessageActivity.this.getComponentName()));
+
+            queryTextListener = new SearchView.OnQueryTextListener() {
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    Log.i("onQueryTextChange", newText);
+                  /*  mProductList.addAll(DataBase.getInstance(MainActivity.this).getAllPrayer());
+                    adapter.notifyDataSetChanged();*/
+                    msg_list.clear();
+                    msg_list.addAll(DatabaseHelper.getInstance(MessageActivity.this).getAllPrayer(newText));
+                    msgAdapter.notifyDataSetChanged();
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    Log.i("onQueryTextSubmit", "newText" + query);
+                    msg_list.clear();
+                    msg_list.addAll(DatabaseHelper.getInstance(MessageActivity.this).getAllPrayer(query));
+                    msgAdapter.notifyDataSetChanged();
+
+                    return true;
+                }
+            };
+            searchView.setOnQueryTextListener(queryTextListener);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            Intent i = new Intent(MainActivity.this,FavActivity.class);
+//            startActivity(i);
+//            return true;
+//        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

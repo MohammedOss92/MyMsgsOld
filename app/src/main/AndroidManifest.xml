@@ -31,6 +31,9 @@
             android:name=".FavActivity"
             android:label="@string/title_activity_fav"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ActivityText"
+            android:label="@string/title_activity_text_msg" />
     </application>
 
 </manifest>

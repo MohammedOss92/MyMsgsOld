@@ -5,4 +5,5 @@
     <string name="title_activity_pager_message">PagerMessage</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_fav">FavActivity</string>
+    <string name="title_activity_text_msg"></string>
 </resources>
