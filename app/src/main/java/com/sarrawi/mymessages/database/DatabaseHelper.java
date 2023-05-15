@@ -141,7 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         text = "%" + text + "%";
         ArrayList<Msg> contactList = new ArrayList<Msg>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + "Messages" + " WHERE Message_Filter  LIKE '" + text + "'";
+        String selectQuery = "SELECT  * FROM " + "Messages" + " WHERE ID_Type and Message_Filter  LIKE '" + text + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -171,7 +171,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return contactList;
     }
 
+    public List<Msg> getMessagesFiltered(int typeID, String filterValue) {
+        Msg u;
 
+        List<Msg> myList = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery(" SELECT *   FROM Messages   where ID_Type='" + typeID + "' and Message_Filter like'%" + filterValue + "%' ", null);
+
+        if (c.moveToFirst()) {
+
+            do {
+                u = new Msg();
+                u.setID_Msg(c.getInt(0));
+                u.setMsg_Name(c.getString(1));
+                u.setMsg_Filter(c.getString(4));
+                u.setID_Type(c.getInt(2));
+                u.setFav(c.getInt(3));
+
+                myList.add(u);
+            }
+            while (c.moveToNext());
+        }
+        c.close();
+        db.close();
+        return myList;
+    }
 
     public String getMsgTitleByTitleID(int msgType) {
 

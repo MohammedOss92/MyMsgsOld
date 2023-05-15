@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class Utils {
 	public static void IntenteShare(Context c, String dialog_Heder_text,
-									String heder, String Msg) {
+                                    String heder, String Msg) {
 		try {
 			Intent sharingIntent = new Intent(Intent.ACTION_SEND);
 			sharingIntent.setType("text/plain");

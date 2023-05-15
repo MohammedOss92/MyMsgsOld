@@ -1,16 +1,16 @@
 package com.sarrawi.mymessages.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -26,6 +26,7 @@ public class MsgTypesAdapter extends RecyclerView.Adapter<MsgTypesAdapter.MyView
     Context con;
     private int fontSize;
     private Typeface font;
+    int aa;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
             TextView txtMsg_types;
@@ -39,10 +40,12 @@ public class MsgTypesAdapter extends RecyclerView.Adapter<MsgTypesAdapter.MyView
         }
     }
 
-    public MsgTypesAdapter(List<MsgTypes> msgTypes_list,Context context)
+    public MsgTypesAdapter(List<MsgTypes> msgTypes_list,Context context,Typeface fontFamily, int fontSize)
     {
         this.con = context;
         this.msgTypes_list=msgTypes_list;
+        this.font = fontFamily;
+        this.fontSize = fontSize;
     }
 
 
@@ -55,11 +58,13 @@ public class MsgTypesAdapter extends RecyclerView.Adapter<MsgTypesAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MsgTypesAdapter.MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull MsgTypesAdapter.MyViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(con);
 
         final MsgTypes m = msgTypes_list.get(position);
         holder.txtMsg_types.setText(m.getName());
+        holder.txtMsg_types.setTextSize(fontSize);
+        holder.txtMsg_types.setTypeface(font);
 
         holder.card_view.setOnClickListener(new View.OnClickListener() {
             @Override

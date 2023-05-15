@@ -1,13 +1,14 @@
 package com.sarrawi.mymessages.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.sarrawi.mymessages.ActivityText;
 import com.sarrawi.mymessages.PagerMessage;
@@ -24,7 +25,6 @@ import com.sarrawi.mymessages.R;
 import com.sarrawi.mymessages.Utils.Utils;
 import com.sarrawi.mymessages.database.DatabaseHelper;
 import com.sarrawi.mymessages.model.Msg;
-import com.sarrawi.mymessages.model.MsgTypes;
 
 import java.util.List;
 
@@ -55,10 +55,12 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.MyViewHolder>  {
         }
     }
 
-    public MsgAdapter(List<Msg> msg_list, Context context)
+    public MsgAdapter(List<Msg> msg_list, Context context,Typeface fontFamily, int fontSize)
     {
         this.con = context;
         this.msg_list=msg_list;
+        this.font = fontFamily;
+        this.fontSize = fontSize;
     }
 
     @NonNull
@@ -70,12 +72,13 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.MyViewHolder>  {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MsgAdapter.MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MsgAdapter.MyViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(con);
         final Msg m = msg_list.get(position);
         holder.txtMsg.setText(m.getMsg_Name());
         final DatabaseHelper s = new DatabaseHelper(con);
-
+        holder.txtMsg.setTextSize(fontSize);
+        holder.txtMsg.setTypeface(font);
         int titleId = m.getID_Type();
         String titleDesc = s.getMsgTitleByTitleID(titleId);
         holder.tvTitle.setText(titleDesc);
@@ -90,8 +93,9 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.MyViewHolder>  {
                 i.putExtra("titleID",m.getID_Type());
                 i.putExtra("pos",position);
                 i.putExtra("msgID",m.getID_Msg());
-                i.putExtra("filter",m.getMsg_Name());
-                i.putExtra("sourceIsFav",m.getFav());
+                i.putExtra("filter",m.getMsg_Filter());
+//                i.putExtra("sourceIsFav",true);
+
                 con.startActivity(i);
             }
         });
@@ -198,6 +202,8 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.MyViewHolder>  {
                 }
             }
         });
+
+
 
     }
 

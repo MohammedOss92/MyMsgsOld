@@ -1,31 +1,31 @@
 package com.sarrawi.mymessages;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
+import android.preference.PreferenceManager;
+
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.sarrawi.mymessages.adapter.MsgAdapter;
-import com.sarrawi.mymessages.adapter.MsgTypesAdapter;
 import com.sarrawi.mymessages.database.DatabaseHelper;
 import com.sarrawi.mymessages.model.Msg;
 import com.sarrawi.mymessages.model.MsgTypes;
@@ -45,11 +45,23 @@ public class MessageActivity extends AppCompatActivity {
     private List<Msg> msg_list;
     private DatabaseHelper mDBHelper;
     int titleID;
+    ////////////////////////////////
+    private SharedPreferences preferences;
+    public static final String TAG = "Armstring";
+    private String txtView1Size;
+    private Typeface font;
+    private int textSize;
+    private Typeface font1,font2,font3,font4,font5,font6,font7;
+    /////////////////////////////
+    AdView mAdView;
+    AdRequest AdRequest;
+    private static final String App_ID = "ca-app-pub-1895204889916566~1424391069";
+    private InterstitialAd mInterstitialAd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbaraa);
         setSupportActionBar(toolbar);
 
         Intent i=getIntent();
@@ -74,7 +86,7 @@ public class MessageActivity extends AppCompatActivity {
         //Get product list in db when db exists
         msg_list = mDBHelper.getAllMsg(titleID);
 //        mProductList = mDBHelper.getListProduct();
-        msgAdapter = new MsgAdapter(msg_list, MessageActivity.this);
+        msgAdapter = new MsgAdapter(msg_list, MessageActivity.this,font,textSize);
         Rv_Msg.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         Rv_Msg.setLayoutManager(mLayoutManager);
@@ -84,6 +96,19 @@ public class MessageActivity extends AppCompatActivity {
         Rv_Msg.setNestedScrollingEnabled(false);
         msgAdapter.notifyDataSetChanged();
 
+        font1=Typeface.createFromAsset(getAssets(),"fonts/a.otf");
+        font2=Typeface.createFromAsset(getAssets(),"fonts/ab.otf");
+        font3=Typeface.createFromAsset(getAssets(),"fonts/ac.otf");
+        font4=Typeface.createFromAsset(getAssets(),"fonts/ad.otf");
+        font5=Typeface.createFromAsset(getAssets(),"fonts/ae.otf");
+        font6=Typeface.createFromAsset(getAssets(),"fonts/af.otf");
+        font7=Typeface.createFromAsset(getAssets(),"fonts/ag.otf");
+        preferences = PreferenceManager.getDefaultSharedPreferences(MessageActivity.this);
+
+
+        AdsView();
+        prepareAd();
+//        navigationdrawaer();
     }
 
     private boolean copyDatabase(Context context) {
@@ -107,83 +132,14 @@ public class MessageActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        msgAdapter.notifyDataSetChanged();
-    }
+
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_msg, menu);
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchManager searchManager = (SearchManager) MessageActivity.this.getSystemService(Context.SEARCH_SERVICE);
 
-
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-
-            final EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
-            searchEditText.setTextColor(getResources().getColor(R.color.colorBlack));
-            searchEditText.setBackgroundColor(getResources().getColor(R.color.colorWhite));
-
-            int searchImgId = android.support.v7.appcompat.R.id.search_button;
-            ImageView v = (ImageView) searchView.findViewById(searchImgId);
-            v.setImageResource(R.mipmap.search);
-
-            int closeImgId = android.support.v7.appcompat.R.id.search_close_btn;
-            ImageView close_button = (ImageView) searchView.findViewById(closeImgId);
-            close_button.setColorFilter(Color.WHITE);
-
-            close_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    searchView.onActionViewCollapsed();
-                    //Collapse the search widget
-                    searchItem.collapseActionView();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
-
-
-                    msg_list.clear();
-                    msg_list.addAll(DatabaseHelper.getInstance(MessageActivity.this).getAllMsgnotID());
-                    msgAdapter.notifyDataSetChanged();
-
-
-                }
-            });
-
-        }
-        if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(MessageActivity.this.getComponentName()));
-
-            queryTextListener = new SearchView.OnQueryTextListener() {
-
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    Log.i("onQueryTextChange", newText);
-                  /*  mProductList.addAll(DataBase.getInstance(MainActivity.this).getAllPrayer());
-                    adapter.notifyDataSetChanged();*/
-                    msg_list.clear();
-                    msg_list.addAll(DatabaseHelper.getInstance(MessageActivity.this).getAllPrayer(newText));
-                    msgAdapter.notifyDataSetChanged();
-                    return true;
-                }
-
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    Log.i("onQueryTextSubmit", "newText" + query);
-                    msg_list.clear();
-                    msg_list.addAll(DatabaseHelper.getInstance(MessageActivity.this).getAllPrayer(query));
-                    msgAdapter.notifyDataSetChanged();
-
-                    return true;
-                }
-            };
-            searchView.setOnQueryTextListener(queryTextListener);
-        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -198,11 +154,201 @@ public class MessageActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings) {
-//            Intent i = new Intent(MainActivity.this,FavActivity.class);
+//            Intent i = new Intent(MessageActivity.this,FavActivity.class);
 //            startActivity(i);
 //            return true;
 //        }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void AdsView() {
+        MobileAds.initialize(this, App_ID);
+        mAdView = (AdView) findViewById(R.id.adView_msg);
+        mAdView.loadAd(new AdRequest.Builder().build());
+    }
+
+    public void  prepareAd(){
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-1895204889916566/8269426046");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                // Code to be executed when an ad request fails.
+            }
+
+            @Override
+            public void onAdOpened() {
+                // Code to be executed when the ad is displayed.
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+            }
+
+            @Override
+            public void onAdClosed() {
+                // Code to be executed when when the interstitial ad is closed.
+//                Toast.makeText(FavActivity.this, "Ad is closed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        specifyFont();
+        specifyFontSize();
+        if(mAdView != null) {
+            mAdView.loadAd(new AdRequest.Builder().build());
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        specifyFont();
+        specifyFontSize();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        specifyFont();
+        specifyFontSize();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        specifyFont();
+        specifyFontSize();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        specifyFont();
+        specifyFontSize();
+//        showAds();
+//        prepareAd();
+//        AdsView();
+        if(mAdView != null) {
+            mAdView.loadAd(new AdRequest.Builder().build());
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        specifyFont();
+        specifyFontSize();
+    }
+
+
+    private void specifyFont(){
+        String fontName = preferences.getString("LIST_OF_FONTS", "Chunkfive.otf");
+        Log.d(TAG, "specifyFont: " + fontName);
+        if(fontName.matches("a.otf")){
+            Log.d(TAG, "specifyFont: 1");
+            font = font1;
+            font1=Typeface.createFromAsset(getAssets(),"fonts/a.otf");
+            msgAdapter = new MsgAdapter(msg_list, MessageActivity.this, font1, textSize);
+            Rv_Msg.setAdapter(msgAdapter);
+        }
+        else if(fontName.matches("ab.otf")){
+            Log.d(TAG, "specifyFont: 2");
+            font = font2;
+
+            font2=Typeface.createFromAsset(getAssets(),"fonts/ab.otf");
+            msgAdapter = new MsgAdapter(msg_list, MessageActivity.this, font2, textSize);
+            Rv_Msg.setAdapter(msgAdapter);
+        }
+        else if(fontName.matches("ac.otf")) {
+            Log.d(TAG, "specifyFont: 3");
+            font = font3;
+
+            font3=Typeface.createFromAsset(getAssets(),"fonts/ac.otf");
+            msgAdapter = new MsgAdapter(msg_list, MessageActivity.this, font3, textSize);
+            Rv_Msg.setAdapter(msgAdapter);
+        }
+        else if(fontName.matches("ad.otf")) {
+            Log.d(TAG, "specifyFont: 4");
+            font = font4;
+            font4=Typeface.createFromAsset(getAssets(),"fonts/ad.otf");
+            msgAdapter = new MsgAdapter(msg_list, MessageActivity.this, font4, textSize);
+            Rv_Msg.setAdapter(msgAdapter);
+        }
+        else if(fontName.matches("ae.otf")) {
+            Log.d(TAG, "specifyFont: 5");
+            font = font5;
+
+            font5=Typeface.createFromAsset(getAssets(),"fonts/ae.otf");
+            msgAdapter = new MsgAdapter(msg_list, MessageActivity.this, font5, textSize);
+            Rv_Msg.setAdapter(msgAdapter);
+        }
+        else if(fontName.matches("af.otf")) {
+            Log.d(TAG, "specifyFont: 6");
+            font = font6;
+
+            font6=Typeface.createFromAsset(getAssets(),"fonts/af.otf");
+            msgAdapter = new MsgAdapter(msg_list, MessageActivity.this, font6, textSize);
+            Rv_Msg.setAdapter(msgAdapter);
+        }
+        else if(fontName.matches("ag.otf")) {
+            Log.d(TAG, "specifyFont: 7");
+            font = font7;
+
+
+            font7=Typeface.createFromAsset(getAssets(),"fonts/ag.otf");
+            msgAdapter = new MsgAdapter(msg_list, MessageActivity.this, font7, textSize);
+            Rv_Msg.setAdapter(msgAdapter);
+        }
+    }
+    private void specifyFontSize(){
+        txtView1Size = preferences.getString("TEXT_SIZE","14");
+        textSize = Integer.parseInt(txtView1Size);
+        msgAdapter = new MsgAdapter(msg_list, MessageActivity.this, font, textSize);
+        Rv_Msg.setAdapter(msgAdapter);
+    }
+//    private void navigationdrawaer() {
+//
+//        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        NavigationView rightNavigationView = (NavigationView) findViewById(R.id.nav_right_view);
+//        rightNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(MenuItem item) {
+//                // Handle Right navigation view item clicks here.
+//                int id = item.getItemId();
+//
+//                if (id == R.id.nav_azkar) {
+////                    Intent i =new Intent(MessageActivity.this,MessageActivity.class);
+////                    startActivity(i);
+//
+//                }
+//                else if (id == R.id.nav_fav) {
+//                    Intent i =new Intent(MessageActivity.this,FavActivity.class);
+//                    startActivity(i);
+//
+//                }
+////                else if (id == R.id.nav_seit) {
+////                    Intent i =new Intent(MessageActivity.this,SettingsActivity.class);
+////                    startActivity(i);
+////
+////                }
+//
+//
+//                drawer.closeDrawer(GravityCompat.END); /*Important Line*/
+//                return true;
+//            }
+//        });
+//    }
 }

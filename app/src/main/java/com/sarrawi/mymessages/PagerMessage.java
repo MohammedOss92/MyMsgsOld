@@ -1,18 +1,23 @@
 package com.sarrawi.mymessages;
 
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
+import android.preference.PreferenceManager;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +26,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.sarrawi.mymessages.Utils.Utils;
 import com.sarrawi.mymessages.database.DatabaseHelper;
 import com.sarrawi.mymessages.model.Msg;
 
@@ -29,12 +39,12 @@ import java.util.List;
 public class PagerMessage extends AppCompatActivity {
 
     /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * The {@link PagerAdapter} that will provide
      * fragments for each of the sections. We use a
      * {@link FragmentPagerAdapter} derivative, which will keep every
      * loaded fragment in memory. If this becomes too memory intensive, it
      * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     * {@link FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -44,9 +54,13 @@ public class PagerMessage extends AppCompatActivity {
     private ViewPager mViewPager;
     List<Msg> msg_list;
     int titleID;
+    int fav;
     boolean sourceISFav;
     int msgId=0;
     String filter="";
+    Typeface tf;
+    SharedPreferences preferences;
+    String txtView1Size;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +71,7 @@ public class PagerMessage extends AppCompatActivity {
 
         Intent i=getIntent();
         titleID=i.getExtras().getInt("titleID");
+        fav=i.getExtras().getInt("fav");
         int pos=i.getExtras().getInt("pos");
         msgId=i.getExtras().getInt("msgID");
         filter=i.getExtras().getString("filter");
@@ -77,6 +92,7 @@ public class PagerMessage extends AppCompatActivity {
         else {
             msg_list = ss.getMessagesNotOrdered(titleID);
         }
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
@@ -88,27 +104,27 @@ public class PagerMessage extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_pager_message, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_pager_message, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     /**
      * A placeholder fragment containing a simple view.
@@ -118,12 +134,20 @@ public class PagerMessage extends AppCompatActivity {
          * The fragment argument representing the section number for this
          * fragment.
          */
+        Typeface tf;
+        SharedPreferences preferences;
+        String txtView1Size;
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public PlaceholderFragment() {
         }
             TextView tvMsg,tvTitle;
             ImageView fav;
+        /////////////////////////////
+        AdView mAdView;
+        com.google.android.gms.ads.AdRequest AdRequest;
+        private static final String App_ID = "ca-app-pub-1895204889916566~1424391069";
+        private InterstitialAd mInterstitialAd;
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -140,6 +164,13 @@ public class PagerMessage extends AppCompatActivity {
         }
 
         @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            this.setHasOptionsMenu(true);
+            preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_pager_message, container, false);
@@ -147,6 +178,9 @@ public class PagerMessage extends AppCompatActivity {
             tvMsg=(TextView)rootView.findViewById(R.id.tvMsg);
             tvTitle=(TextView)rootView.findViewById(R.id.tvTitle);
             fav = (ImageView)rootView.findViewById(R.id.imgFavaa);
+            MobileAds.initialize(getActivity(), App_ID);
+            mAdView = (AdView)rootView.findViewById(R.id.adView_frag);
+            mAdView.loadAd(new AdRequest.Builder().build());
 
             String msg=getArguments().getString("Resaleh");
             final Msg m=getArguments().getParcelable("MsgObject");
@@ -182,8 +216,139 @@ public class PagerMessage extends AppCompatActivity {
 
 
 
+
+
             return rootView;
+
+
+
         }
+        private void specifyFontFamilyFromList() {
+            String font = preferences.getString("LIST_OF_FONTS", "Chunkfive.otf");
+            Typeface typeface;
+            switch (font) {
+                case "a.otf":
+                    typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/a.otf");
+                    tvMsg.setTypeface(typeface);
+                    break;
+                case "ab.otf":
+                    typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ab.otf");
+                    tvMsg.setTypeface(typeface);
+                    break;
+                case "ac.otf":
+                    typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ac.otf");
+                    tvMsg.setTypeface(typeface);
+                    break;
+                case "ad.otf":
+                    typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ad.otf");
+                    tvMsg.setTypeface(typeface);
+                    break;
+                case "ae.otf":
+                    typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ae.otf");
+                    tvMsg.setTypeface(typeface);
+                    break;
+                case "af.otf":
+                    typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/af.otf");
+                    tvMsg.setTypeface(typeface);
+                    break;
+                case "ag.otf":
+                    typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/ag.otf");
+                    tvMsg.setTypeface(typeface);
+                    break;
+            }
+        }
+
+        private void specifyFontSize() {
+            txtView1Size = preferences.getString("TEXT_SIZE", "20");
+            int txtSizeIntegerValue = Integer.parseInt(txtView1Size);
+            tvMsg.setTextSize(txtSizeIntegerValue);
+        }
+
+        @Override
+        public void onStart() {
+            super.onStart();
+            specifyFontFamilyFromList();
+            specifyFontSize();
+            if(mAdView != null) {
+                mAdView.loadAd(new AdRequest.Builder().build());
+            }
+        }
+
+        @Override
+        public void onStop() {
+
+            super.onStop();
+            specifyFontFamilyFromList();
+            specifyFontSize();
+        }
+
+        @Override
+        public void onDestroy() {
+//            if (this.mAdView != null) {
+//                this.mAdView.destroy();
+//            }
+            super.onDestroy();
+            specifyFontFamilyFromList();
+            specifyFontSize();
+        }
+
+
+        ///////////////////////////
+        @Override
+        public void onResume() {
+//            if (this.mAdView != null) {
+//                this.mAdView.resume();
+//            }
+            super.onResume();
+            specifyFontFamilyFromList();
+            specifyFontSize();
+            if(mAdView != null) {
+                mAdView.loadAd(new AdRequest.Builder().build());
+            }
+        }
+
+        @Override
+        public void onPause() {
+//            if (this.mAdView != null) {
+//                this.mAdView.pause();
+//            }
+            super.onPause();
+            specifyFontFamilyFromList();
+            specifyFontSize();
+
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            inflater.inflate(R.menu.menu_pager_doaa, menu);
+            super.onCreateOptionsMenu(menu, inflater);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == R.id.action_share) {
+                Utils.IntenteShare(getActivity(), "مسجاتي", "مسجاتي", tvMsg.getText().toString());
+                return true;
+            } else if (id == R.id.action_copy) {
+                String stringYouExtracted = tvMsg.getText().toString();
+                if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getActivity().getSystemService(getActivity().CLIPBOARD_SERVICE);
+                    clipboard.setText(stringYouExtracted);
+                } else {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getActivity().getSystemService(getActivity().CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData
+                            .newPlainText(stringYouExtracted, stringYouExtracted);
+                    clipboard.setPrimaryClip(clip);
+                }
+                Toast.makeText(getActivity(), "تم نسخ النص", Toast.LENGTH_SHORT).show();
+
+
+            }
+            return super.onOptionsItemSelected(item);
+        }
+
+
     }
 
     /**

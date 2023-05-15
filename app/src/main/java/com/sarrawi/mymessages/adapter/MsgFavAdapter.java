@@ -1,14 +1,15 @@
 package com.sarrawi.mymessages.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +34,12 @@ public class MsgFavAdapter extends RecyclerView.Adapter<MsgFavAdapter.MyViewHold
     private Typeface font;
 
 
-    public MsgFavAdapter(List<Msg> msg_list, Context context)
+    public MsgFavAdapter(List<Msg> msg_list, Context context,Typeface fontFamily, int fontSize)
     {
         this.con = context;
         this.msg_list=msg_list;
+        this.font = fontFamily;
+        this.fontSize = fontSize;
     }
 
 
@@ -50,7 +53,7 @@ public class MsgFavAdapter extends RecyclerView.Adapter<MsgFavAdapter.MyViewHold
         return new MyViewHolder(itemView);    }
 
     @Override
-    public void onBindViewHolder(@NonNull final MsgFavAdapter.MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MsgFavAdapter.MyViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(con);
         final Msg m = msg_list.get(position);
         holder.txtMsg.setText(m.getMsg_Name());
@@ -58,7 +61,8 @@ public class MsgFavAdapter extends RecyclerView.Adapter<MsgFavAdapter.MyViewHold
         int titleId = m.getID_Type();
         String titleDesc = s.getMsgTitleByTitleID(titleId);
         holder.tvTitle.setText(titleDesc);
-
+        holder.txtMsg.setTextSize(fontSize);
+        holder.txtMsg.setTypeface(font);
         final  DatabaseHelper d=new DatabaseHelper(con);
         if (d.getIFMsgIsFav(m) == 0) {
             holder.fav.setImageResource(R.mipmap.nf);
@@ -198,6 +202,9 @@ public class MsgFavAdapter extends RecyclerView.Adapter<MsgFavAdapter.MyViewHold
             txtMsg=(TextView)view.findViewById(R.id.txt_msg);
             fav = (ImageView)view.findViewById(R.id.img_fav);
             cardview = (RelativeLayout) view.findViewById(R.id.card_view);
+            share = (ImageView) view.findViewById(R.id.share);
+            copy = (ImageView) view.findViewById(R.id.copy);
+            shared = (ImageView) view.findViewById(R.id.shared);
             tvTitle = (TextView) view.findViewById(R.id.tvTitle);
         }
     }

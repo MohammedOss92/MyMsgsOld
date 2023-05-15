@@ -1,9 +1,10 @@
 package com.sarrawi.mymessages;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.ClipboardManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -50,7 +51,7 @@ public class ActivityText extends AppCompatActivity {
     Button b1;
 
     public static void hideSoftKeyboard(Activity activity) {
-        ((InputMethodManager) activity.getSystemService("input_method")).hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -251,8 +252,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out1.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out1.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share1.setOnClickListener(new View.OnClickListener() {
@@ -265,8 +266,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out2.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out2.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share2.setOnClickListener(new View.OnClickListener() {
@@ -279,8 +280,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out3.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out3.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share3.setOnClickListener(new View.OnClickListener() {
@@ -293,8 +294,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out4.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out4.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share4.setOnClickListener(new View.OnClickListener() {
@@ -307,8 +308,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy5.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out5.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out5.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share5.setOnClickListener(new View.OnClickListener() {
@@ -321,8 +322,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy6.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out6.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out6.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share6.setOnClickListener(new View.OnClickListener() {
@@ -335,8 +336,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy7.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out7.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out7.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share7.setOnClickListener(new View.OnClickListener() {
@@ -349,8 +350,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy8.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out8.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out8.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share8.setOnClickListener(new View.OnClickListener() {
@@ -363,8 +364,8 @@ public class ActivityText extends AppCompatActivity {
         });
         this.copy9.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((ClipboardManager) ActivityText.this.getSystemService("clipboard")).setText(ActivityText.this.out9.getText().toString());
-                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", 1).show();
+                ((ClipboardManager) ActivityText.this.getSystemService(Context.CLIPBOARD_SERVICE)).setText(ActivityText.this.out9.getText().toString());
+                Toast.makeText(ActivityText.this.getBaseContext(), "\u062a\u0645 \u0646\u0633\u062e \u0645\u062d\u062a\u0648\u0649 \u0645\u0631\u0628\u0639 \u0627\u0644\u0646\u0635 \u0627\u0644\u0646\u0627\u062a\u062c", Toast.LENGTH_LONG).show();
             }
         });
         this.share9.setOnClickListener(new View.OnClickListener() {
@@ -389,5 +390,5 @@ public class ActivityText extends AppCompatActivity {
 
 
 
-//   
+//
 }
