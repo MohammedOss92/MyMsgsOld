@@ -7,8 +7,14 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +31,6 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.sarrawi.mymessages.adapter.MsgTypesAdapter;
 import com.sarrawi.mymessages.database.DatabaseHelper;
@@ -106,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
         AdsView();
         prepareAd();
-//        showAds();
+        showAds();
         navigationdrawaer();
 
     }
@@ -193,44 +198,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-        private void AdsView() {
-        MobileAds.initialize(this, App_ID);
+    private void AdsView() {
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+        });
         mAdView = (AdView) findViewById(R.id.adView_type);
         mAdView.loadAd(new AdRequest.Builder().build());
     }
 
     public void  prepareAd(){
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-1895204889916566/8269426046");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
+        AdRequest adRequest = new AdRequest.Builder().build();
 
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-            }
+        InterstitialAd.load(this,"ca-app-pub-1895204889916566/4403433142", adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        mInterstitialAd = interstitialAd;
+                        Log.i(TAG, "onAdLoaded");
+                    }
 
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when the ad is displayed.
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when when the interstitial ad is closed.
-//                Toast.makeText(FavActivity.this, "Ad is closed", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        Log.d(TAG, loadAdError.toString());
+                        mInterstitialAd = null;
+                    }
+                });
     }
     private void showAds() {
         ScheduledExecutorService scheduler =
@@ -239,10 +236,11 @@ public class MainActivity extends AppCompatActivity {
 
             public void run() {
                 Log.i("hello", "world");
+                prepareAd();
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        if (mInterstitialAd.isLoaded()) {
-                            mInterstitialAd.show();
+                        if (mInterstitialAd != null) {
+                            mInterstitialAd.show(MainActivity.this);
                         } else {
                             Log.d("TAG"," Interstitial not loaded");
                         }

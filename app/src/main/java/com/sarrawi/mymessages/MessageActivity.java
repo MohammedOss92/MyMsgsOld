@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.sarrawi.mymessages.adapter.MsgAdapter;
 import com.sarrawi.mymessages.database.DatabaseHelper;
@@ -56,7 +55,7 @@ public class MessageActivity extends AppCompatActivity {
     AdView mAdView;
     AdRequest AdRequest;
     private static final String App_ID = "ca-app-pub-1895204889916566~1424391069";
-    private InterstitialAd mInterstitialAd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,43 +162,13 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void AdsView() {
-        MobileAds.initialize(this, App_ID);
         mAdView = (AdView) findViewById(R.id.adView_msg);
         mAdView.loadAd(new AdRequest.Builder().build());
     }
 
     public void  prepareAd(){
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-1895204889916566/8269426046");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
 
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when the ad is displayed.
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when when the interstitial ad is closed.
-//                Toast.makeText(FavActivity.this, "Ad is closed", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override

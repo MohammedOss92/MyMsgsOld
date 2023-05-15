@@ -28,8 +28,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.sarrawi.mymessages.Utils.Utils;
 import com.sarrawi.mymessages.database.DatabaseHelper;
 import com.sarrawi.mymessages.model.Msg;
@@ -145,9 +146,7 @@ public class PagerMessage extends AppCompatActivity {
             ImageView fav;
         /////////////////////////////
         AdView mAdView;
-        com.google.android.gms.ads.AdRequest AdRequest;
-        private static final String App_ID = "ca-app-pub-1895204889916566~1424391069";
-        private InterstitialAd mInterstitialAd;
+        AdRequest AdRequest;
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -178,7 +177,12 @@ public class PagerMessage extends AppCompatActivity {
             tvMsg=(TextView)rootView.findViewById(R.id.tvMsg);
             tvTitle=(TextView)rootView.findViewById(R.id.tvTitle);
             fav = (ImageView)rootView.findViewById(R.id.imgFavaa);
-            MobileAds.initialize(getActivity(), App_ID);
+
+            MobileAds.initialize(getActivity(), new OnInitializationCompleteListener() {
+                @Override
+                public void onInitializationComplete(InitializationStatus initializationStatus) {}
+            });
+
             mAdView = (AdView)rootView.findViewById(R.id.adView_frag);
             mAdView.loadAd(new AdRequest.Builder().build());
 

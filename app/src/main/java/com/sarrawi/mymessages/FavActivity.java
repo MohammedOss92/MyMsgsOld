@@ -15,8 +15,9 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.sarrawi.mymessages.adapter.MsgFavAdapter;
 import com.sarrawi.mymessages.database.DatabaseHelper;
 import com.sarrawi.mymessages.model.Msg;
@@ -40,9 +41,7 @@ public class FavActivity extends AppCompatActivity {
     private Typeface font1,font2,font3,font4,font5,font6,font7;
     /////////////
     AdView mAdView;
-    com.google.android.gms.ads.AdRequest AdRequest;
-    private static final String App_ID = "ca-app-pub-1895204889916566~1424391069";
-    private InterstitialAd mInterstitialAd;
+    AdRequest AdRequest;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +70,10 @@ public class FavActivity extends AppCompatActivity {
 
 
     private void AdsView() {
-        MobileAds.initialize(this, App_ID);
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+        });
         mAdView = (AdView) findViewById(R.id.adView_msg);
         mAdView.loadAd(new AdRequest.Builder().build());
     }
@@ -79,36 +81,7 @@ public class FavActivity extends AppCompatActivity {
 
     public void  prepareAd(){
 
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-1895204889916566/8269426046");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
 
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when the ad is displayed.
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when when the interstitial ad is closed.
-//                Toast.makeText(FavActivity.this, "Ad is closed", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
